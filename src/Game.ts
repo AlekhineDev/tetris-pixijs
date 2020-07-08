@@ -1,15 +1,22 @@
 import * as PIXI from "pixi.js";
 import { Grid } from "./Grid";
-import { ShapeData as ShapeData, ShapeInfo } from "./interfaces/IShapes";
-import { ShapeSprite } from "./ShapeSprite";
 import * as _ from "lodash";
+import { utils } from "./Utils";
+import { BlockShape } from "./BlockShape";
+import { consts } from "./consts";
+import { ShapeInfo, DataJson, Outcome } from "./interfaces/IDataJson";
 export class Game extends PIXI.Container {
-    private _shapeDatas: ShapeData;
+    private _data: DataJson;
     private _grid: Grid;
     private _graphics: Partial<Record<string, PIXI.LoaderResource>>;
+    private _scoreText: PIXI.Text;
+    private _score: number = 0;
+    private _spawnedShapes: number = 0;
     constructor() {
         super();
-        this._init().then(() => this._start())
+        //Initialize the game, then when that is completed, start the game.
+        this._init()
+            .then(() => this._start())
     }
     /**
      * Initialize the game, fetch assets used by the game such as JSON and Graphics.
@@ -18,45 +25,94 @@ export class Game extends PIXI.Container {
 
         this._grid = new Grid(3, 12);
         this.addChild(this._grid);
-        this._shapeDatas = await this._fetchShapeData();
+
+        const scoreTitle = new PIXI.Text("Score:")
+        this._scoreText = new PIXI.Text("")
+
+        this._scoreText.anchor.x = 1;
+        scoreTitle.x = 0
+        this._scoreText.x = consts.GameWidth;
+
+        this.addChild(scoreTitle)
+        this.addChild(this._scoreText);
+
+        this._data = await this._fetchDataJson();
         this._graphics = await this._fetchGraphics();
+
     }
-    private _start() {
-        const shape: ShapeSprite = this._spawnShapeSprite();
-        const spawnPoint: PIXI.Point = new PIXI.Point(0, 0)
-        this._grid.addChild(shape)
-        shape.position.set(spawnPoint.x, spawnPoint.y)
-    }
-    private _spawnShapeSprite(): ShapeSprite {
-        const randomShapeData = _.sample(this._shapeDatas.shapes);
-        const texture = this._graphics[randomShapeData.name].texture
-        return new ShapeSprite(texture, randomShapeData)
+    /**
+     * Start the game, assets should be fetched before starting.
+     */
+    private async _start() {
+        this._refreshScoreText();
+        this._dropShape();
     }
 
-    private _fetchShapeData(): Promise<ShapeData> {
-        return fetch("/shapes.json")
+    /**
+     * Spawn and drop a shape until it collides, recursively calls itself until it spawns a shape that cannot move down.
+     */
+    private async _dropShape() {
+
+        const shape: BlockShape = this._spawnShape();
+        this._grid.addShape(shape)
+
+        if (!this._grid.canMoveDownShape(shape)) {
+            //Player lost! Shape just spawned and cant move.
+            return;
+        }
+
+        await utils.timeout(250)
+
+        //Move shape down while it can.
+        while (this._grid.canMoveDownShape(shape)) {
+            this._grid.moveDownShape(shape);
+            await utils.timeout(250)
+        }
+
+        //Find full rows until they have all been cleared.
+        while (this._grid.findFullRow() > -1) {
+            this._grid.clearRow(this._grid.findFullRow());
+
+            this._score += 10;
+            this._refreshScoreText();
+            await utils.timeout(500)
+        }
+        this._dropShape();
+    }
+    private _refreshScoreText() {
+        this._scoreText.text = this._score.toString();
+    }
+
+    private _spawnShape(): BlockShape {
+
+        // const randomShapeData: ShapeInfo = _.sample(this._data.shapes);
+
+        const outcome: Outcome = this._data.outcome[this._spawnedShapes]
+        const outcomeShapeInfo: ShapeInfo = this._findShape(outcome);
+        const texture: PIXI.Texture = this._graphics["baseshape"].texture
+        this._spawnedShapes++
+        return new BlockShape(texture, outcomeShapeInfo, outcome.rotation, outcome.column)
+    }
+    private _findShape(outcome: Outcome): ShapeInfo {
+        for (const shape of this._data.shapes) {
+            if (outcome.name === shape.name) return shape;
+        }
+    }
+
+    private _fetchDataJson(): Promise<DataJson> {
+        return fetch("/data.json")
             .then(response => response.json())
-            .then(data => Promise.resolve(data as ShapeData))
+            .then(data => Promise.resolve(data as DataJson))
 
     }
     private _fetchGraphics(): Promise<Partial<Record<string, PIXI.LoaderResource>>> {
         const loader = new PIXI.Loader()
-        loader.add("shape1", "/graphics/shape1.png")
-        loader.add("shape2", "/graphics/shape2.png")
-        loader.add("shape3", "/graphics/shape3.png")
-        loader.add("shape4", "/graphics/shape4.png")
-        loader.add("shape5", "/graphics/shape5.png")
+        loader.add("baseshape", "/graphics/baseshape.png")
         const resources = new Promise<Partial<Record<string, PIXI.LoaderResource>>>(resolve => {
             loader.load((loader: PIXI.Loader, resources: Partial<Record<string, PIXI.LoaderResource>>) => {
                 resolve(resources)
             })
         });
         return resources;
-    }
-    private _findTexture(name: string): PIXI.Texture {
-        for (const property of Object.keys(this._graphics)) {
-            if (property === name) return this._graphics[property].texture;
-        }
-        return null;
     }
 }

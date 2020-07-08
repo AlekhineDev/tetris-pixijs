@@ -10,4 +10,5 @@ import { Game } from "./Game";
 
     let gameContainer = document.getElementById("game-container")
     gameContainer.appendChild(app.view)
+    
 })();

@@ -1,0 +1,60 @@
+{
+  "shapes": [
+    {
+      "name": "shape1",
+      "shape": [
+        [1, 0],
+        [1, 1]
+      ]
+    },
+    {
+      "name": "shape2",
+      "shape": [
+        [1, 1, 1],
+        [0, 0, 0],
+        [0, 0, 0]
+      ]
+    },
+    {
+      "name": "shape3",
+      "shape": [
+        [1, 0, 1],
+        [0, 1, 0],
+        [0, 0, 0]
+      ]
+    },
+    {
+      "name": "shape4",
+      "shape": [
+        [1, 0, 0],
+        [0, 1, 1],
+        [0, 0, 0]
+      ]
+    },
+    {
+      "name": "shape5",
+      "shape": [
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1]
+      ]
+    }
+  ],
+
+  "outcome": [
+    { "name": "shape1", "rotation": 0, "column": 1 },
+    { "name": "shape5", "rotation": 1, "column": 0 },
+    { "name": "shape3", "rotation": 3, "column": 0 },
+    { "name": "shape2", "rotation": 1, "column": 2 },
+    { "name": "shape1", "rotation": 2, "column": 0 },
+    { "name": "shape5", "rotation": 2, "column": 0 },
+    { "name": "shape1", "rotation": 2, "column": 0 },
+    { "name": "shape4", "rotation": 2, "column": 0 },
+    { "name": "shape2", "rotation": 2, "column": 0 },
+    { "name": "shape4", "rotation": 2, "column": 0 },
+    { "name": "shape2", "rotation": 2, "column": 0 },
+    { "name": "shape3", "rotation": 2, "column": 0 },
+    { "name": "shape4", "rotation": 2, "column": 0 },
+    { "name": "shape5", "rotation": 2, "column": 0 }
+  ]
+}
