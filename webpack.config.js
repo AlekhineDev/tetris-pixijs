@@ -1,5 +1,5 @@
 const path = require('path');
-
+var PORT= process.env.PORT || 9000
 module.exports = {
   entry: './src/Main.ts',
   mode: "development",
@@ -15,7 +15,7 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     compress: true,
-    port: 9000
+    port: PORT
   },
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ]

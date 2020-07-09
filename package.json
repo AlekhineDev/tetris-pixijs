@@ -4,7 +4,7 @@
   "description": "Tetris game but no user interaction and the grid is 3 x 12.",
   "main": "index.js",
   "scripts": {
-    "dev": "node node_modules/webpack-dev-server/bin/webpack-dev-server.js --content-base ./dist --watch"
+    "start": "node node_modules/webpack-dev-server/bin/webpack-dev-server.js --content-base ./dist --watch"
   },
   "author": "",
   "license": "ISC",

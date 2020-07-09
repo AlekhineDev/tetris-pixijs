@@ -76,10 +76,8 @@ export class BlockShape {
         for (let y = 0; y < shape.length; y++) {
             for (let x = 0; x < shape[y].length; x++) {
                 if (shape[y][x] !== 0) {
-                    console.log("Found a piece on: " + x + " " + y)
                     const newX = -y
                     const newY = x
-                    console.log("Converted to " + newX + " " + newY)
                     newPoints.push(new Point(newX, newY))
                 }
             }
@@ -91,20 +89,23 @@ export class BlockShape {
             if (point.x < lowestX) lowestX = point.x;
             if (point.y < lowestY) lowestY = point.y
         }
-
+        //Avoid negative numbers.
         for (const point of newPoints) {
             point.x -= (lowestX)
-            point.x = Math.abs(point.x)
+            point.x = Math.abs(point.x) //JS allows -0 as a number, which we here convert to 0.
 
             point.y -= (lowestY)
             point.y = Math.abs(point.y)
         }
 
         const gridPositions: number[][] = [];
+        //Cycle through shape and set gridpositions to the new rotated shape.
         for (let y = 0; y < shape.length; y++) {
             let row: number[] = []
+
             for (let x = 0; x < shape[y].length; x++) {
                 let containsBlock = false;
+
                 for (const point of newPoints) {
                     if (point.x == x && point.y == y) {
                         containsBlock = true;
@@ -115,9 +116,7 @@ export class BlockShape {
                 else row.push(0)
             }
             gridPositions.push(row)
-
         }
-        console.log(newPoints)
         return gridPositions;
     }
 }
