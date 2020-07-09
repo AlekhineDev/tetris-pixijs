@@ -1,6 +1,6 @@
 import { Texture, Sprite, Point } from "pixi.js";
 import { Block } from "./Block";
-import { consts } from "./consts";
+import { consts } from "./Consts";
 import _ = require("lodash");
 import { ShapeInfo } from "./interfaces/IDataJson";
 export class BlockShape {

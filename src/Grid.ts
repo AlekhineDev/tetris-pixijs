@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { Block } from "./Block";
 import { BlockShape } from "./BlockShape";
-import { consts } from "./consts";
+import { consts } from "./Consts";
 
 export class Grid extends PIXI.Container {
 

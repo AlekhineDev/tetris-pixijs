@@ -3,7 +3,7 @@ import { Grid } from "./Grid";
 import * as _ from "lodash";
 import { utils } from "./Utils";
 import { BlockShape } from "./BlockShape";
-import { consts } from "./consts";
+import { consts } from "./Consts";
 import { ShapeInfo, DataJson, Outcome } from "./interfaces/IDataJson";
 export class Game extends PIXI.Container {
     private _data: DataJson;
@@ -19,7 +19,7 @@ export class Game extends PIXI.Container {
             .then(() => this._start())
     }
     /**
-     * Initialize the game, fetch assets used by the game such as JSON and Graphics.
+     * Initialize the game, fetch assets used by the game such as JSON and Graphics, set up game objects such as grid and score text.
      */
     private async _init() {
 
@@ -54,6 +54,10 @@ export class Game extends PIXI.Container {
     private async _dropShape() {
 
         const shape: BlockShape = this._spawnShape();
+        if(shape==null){
+            //Player lost! No shape to add.
+            return
+        }
         this._grid.addShape(shape)
 
         if (!this._grid.canMoveDownShape(shape)) {
@@ -75,6 +79,7 @@ export class Game extends PIXI.Container {
 
             this._score += 10;
             this._refreshScoreText();
+            
             await utils.timeout(500)
         }
         this._dropShape();
@@ -85,7 +90,7 @@ export class Game extends PIXI.Container {
 
     private _spawnShape(): BlockShape {
 
-        // const randomShapeData: ShapeInfo = _.sample(this._data.shapes);
+        if (this._data.outcome.length <= this._spawnedShapes) return null;
 
         const outcome: Outcome = this._data.outcome[this._spawnedShapes]
         const outcomeShapeInfo: ShapeInfo = this._findShape(outcome);
@@ -108,6 +113,8 @@ export class Game extends PIXI.Container {
     private _fetchGraphics(): Promise<Partial<Record<string, PIXI.LoaderResource>>> {
         const loader = new PIXI.Loader()
         loader.add("baseshape", "/graphics/baseshape.png")
+
+        //Wrap loader in promise to allow for async.
         const resources = new Promise<Partial<Record<string, PIXI.LoaderResource>>>(resolve => {
             loader.load((loader: PIXI.Loader, resources: Partial<Record<string, PIXI.LoaderResource>>) => {
                 resolve(resources)
