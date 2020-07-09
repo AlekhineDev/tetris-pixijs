@@ -8,4 +8,4 @@ Node.js
 ## How to setup
 1. Open a terminal navigate to the root of this project folder and run 'npm i' to install appropriate dependencies, 'npm' requires Node.js
 2. Then run command 'npm start'.
-3. The game should now bundle and compiled with webpack and upon completion be hosted at localhost:9000
+3. The game should now bundle and compile with webpack and upon completion be hosted at localhost:9000
