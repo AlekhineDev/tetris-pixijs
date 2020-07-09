@@ -25,7 +25,6 @@ module.exports = {
     path: path.resolve(__dirname, 'dist')
   },
   devtool:"source-map",
-  watch:true,
   externals: [
       // Don't bundle pixi.js, assume it'll be included in the HTML via a script
       // tag, and made available in the global variable PIXI.
